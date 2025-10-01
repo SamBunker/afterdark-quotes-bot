@@ -31,6 +31,7 @@ intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 
+
 class MyClient(discord.Client):
     def __init__(self):
         super().__init__(intents=intents)
@@ -38,6 +39,7 @@ class MyClient(discord.Client):
 
     async def setup_hook(self):
         await self.tree.sync()
+
 
 bot = MyClient()
 
