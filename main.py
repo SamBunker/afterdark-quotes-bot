@@ -30,7 +30,7 @@ intents.message_content = True
 
 bot = discord.Client(intents=intents)
 
-status = (["Watching your every move"])
+status = (["Bot Version: 1.2"])
 
 def save_message_to_dynamodb(message):
     message_data = {
