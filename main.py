@@ -2,6 +2,7 @@ import discord
 import os
 import boto3
 import uuid
+from discord import app_commands
 from discord.ext import tasks
 from datetime import datetime, timedelta
 
@@ -30,8 +31,15 @@ intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 
-# Changed from discord.Client to discord.Bot for slash commands
-bot = discord.Bot(intents=intents)
+class MyClient(discord.Client):
+    def __init__(self):
+        super().__init__(intents=intents)
+        self.tree = app_commands.CommandTree(self)
+
+    async def setup_hook(self):
+        await self.tree.sync()
+
+bot = MyClient()
 
 status = "Bot Version: 2.0.0"
 
@@ -53,12 +61,6 @@ def save_message_to_dynamodb(message):
 @bot.event
 async def on_ready():
     print(f"Bot is ready! Logged in as {bot.user}")
-    print("Syncing slash commands...")
-    try:
-        synced = await bot.sync_commands()
-        print(f"Successfully synced {len(synced)} command(s)")
-    except Exception as e:
-        print(f"Failed to sync commands: {e}")
     change_status.start()
 
 
@@ -78,12 +80,9 @@ async def on_message(message):
     if message.channel.id == CHANNEL_ID:
         save_message_to_dynamodb(message)
 
-    # Process commands if any
-    await bot.process_application_commands(message)
 
-
-@bot.slash_command(name="quotes", description="Get your personal access link to the After Dark quotes website")
-async def quotes_command(ctx):
+@bot.tree.command(name="quotes", description="Get your personal access link to the After Dark quotes website")
+async def quotes_command(interaction: discord.Interaction):
     """Generate and send a unique authentication link to access the quotes website"""
 
     try:
@@ -95,13 +94,13 @@ async def quotes_command(ctx):
         expires_at = now + timedelta(hours=8)
 
         # Get user's display name (server nickname if set, otherwise username)
-        display_name = ctx.author.display_name
-        username = ctx.author.name
+        display_name = interaction.user.display_name
+        username = interaction.user.name
 
         # Store token in DynamoDB with user info
         auth_table.put_item(Item={
             'token': token,
-            'discord_id': str(ctx.author.id),
+            'discord_id': str(interaction.user.id),
             'username': username,
             'display_name': display_name,
             'created_at': now.isoformat(),
@@ -123,13 +122,13 @@ async def quotes_command(ctx):
         embed.add_field(name="🔒 Security", value="Link is single-use only", inline=True)
         embed.set_footer(text="This message is only visible to you")
 
-        await ctx.respond(embed=embed, ephemeral=True)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
-        print(f"Generated auth token for {ctx.author.name} (ID: {ctx.author.id})")
+        print(f"Generated auth token for {interaction.user.name} (ID: {interaction.user.id})")
 
     except Exception as e:
         print(f"Error generating auth token: {e}")
-        await ctx.respond(
+        await interaction.response.send_message(
             "❌ An error occurred while generating your access link. Please try again later.",
             ephemeral=True
         )
