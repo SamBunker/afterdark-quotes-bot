@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  quotes-bot:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    pull_policy: build
+    container_name: quotes-bot
+    restart: unless-stopped
+    environment:
+      - TOKEN=${TOKEN}
+      - CHANNEL_ID=${CHANNEL_ID}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+      - DYNAMO_TABLE=${DYNAMO_TABLE}
+      - AUTH_TOKENS_TABLE=${AUTH_TOKENS_TABLE}
+      - WEBSITE_URL=${WEBSITE_URL}
