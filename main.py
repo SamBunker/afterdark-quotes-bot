@@ -1,6 +1,7 @@
 import discord
 import os
 import boto3
+from discord.ext import tasks
 
 TOKEN = os.getenv("TOKEN")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
@@ -29,6 +30,7 @@ intents.message_content = True
 
 bot = discord.Client(intents=intents)
 
+status = (["Watching your every move"])
 
 def save_message_to_dynamodb(message):
     message_data = {
@@ -43,6 +45,14 @@ def save_message_to_dynamodb(message):
     except Exception as e:
         print(f"Error saving to DynamoDB: {e}")
 
+@bot.event
+async def on_ready():
+    change_status.start()
+
+@tasks.loop(seconds=60)
+async def change_status():
+    await bot.change_presence(status=discord.Status.online,
+                                 activity=discord.Game(status))
 
 @bot.event
 async def on_message(message):
