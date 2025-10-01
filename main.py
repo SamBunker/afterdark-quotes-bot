@@ -14,7 +14,11 @@ DYNAMO_TABLE = os.getenv("DYNAMO_TABLE")
 WEBSITE_URL = os.getenv("WEBSITE_URL")
 AUTH_TOKENS_TABLE = os.getenv("AUTH_TOKENS_TABLE")
 
+
 dynamodb = boto3.resource("dynamodb", region_name=AWS_DEFAULT_REGION, aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+
+quotes_table = dynamodb.Table(DYNAMO_TABLE)
+auth_table = dynamodb.Table(AUTH_TOKENS_TABLE)
 
 intents = discord.Intents.default()
 intents.members = True  # Enable member tracking
