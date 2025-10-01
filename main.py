@@ -109,7 +109,7 @@ async def quotes_command(ctx):
         # Send ephemeral message (only visible to the user)
         embed = discord.Embed(
             title="🎭 After Dark Quotes Access",
-            description=f"Click the link below to access the quotes rating website:",
+            description="Click the link below to access the quotes rating website:",
             color=discord.Color.purple()
         )
         embed.add_field(name="Access Link", value=f"[Click Here]({link})", inline=False)
