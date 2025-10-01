@@ -35,7 +35,7 @@ def save_message_to_dynamodb(message):
                 "timestamp": str(message.created_at),
         }
         try:
-                table.put_item(Item=message_data)
+                quotes_table.put_item(Item=message_data)
                 print(f"Saved message: {message.id} from {message.author.name}")
         except Exception as e:
                 print(f"Error saving to DynamoDB: {e}")
