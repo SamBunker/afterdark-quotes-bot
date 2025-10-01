@@ -34,14 +34,10 @@ jobs:
 
   deploy:
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:
-    - name: Deploy to Raspberry Pi
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.PI_HOST }}
-        username: ${{ secrets.PI_USERNAME }}
-        key: ${{ secrets.PI_SSH_KEY }}
-        script: /home/pi/deploy-bot.sh
+      - name: Trigger Portainer Webhook
+        run: |
+          curl -X POST http://192.168.0.148:9000/api/stacks/webhooks/d0362f3e-8178-468f-897a-3cef2a37b2b8
