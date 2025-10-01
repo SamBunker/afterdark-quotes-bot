@@ -26,9 +26,7 @@ jobs:
 
     - name: Lint with flake8
       run: |
-        # Stop build if there are Python syntax errors
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # Check for code quality issues
         flake8 . --count --max-line-length=127 --statistics
 
     - name: Run tests
@@ -36,10 +34,14 @@ jobs:
 
   deploy:
     needs: test
-    runs-on: self-hosted  # Changed from ubuntu-latest
+    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:
-      - name: Trigger Portainer Webhook
-        run: |
-          curl -X POST http://192.168.0.148:9000/api/stacks/webhooks/d0362f3e-8178-468f-897a-3cef2a37b2b8
+    - name: Deploy to Raspberry Pi
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.PI_HOST }}
+        username: ${{ secrets.PI_USERNAME }}
+        key: ${{ secrets.PI_SSH_KEY }}
+        script: /home/pi/deploy-bot.sh
