@@ -6,7 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     pull_policy: build
-    container_name: quotes-bot
     restart: unless-stopped
     environment:
       - TOKEN=${TOKEN}
