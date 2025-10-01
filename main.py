@@ -40,7 +40,7 @@ class MyClient(discord.Client):
 
 bot = MyClient()
 
-status = "Bot Version: 2.0.0"
+status = "Bot Version: 2.0.1"
 
 
 def save_message_to_dynamodb(message):
@@ -99,12 +99,18 @@ async def quotes_command(interaction: discord.Interaction):
         display_name = interaction.user.display_name
         username = interaction.user.name
 
+        # Check if user has admin roles
+        admin_roles = ["Limited Power", "Wine Mom"]
+        user_roles = [role.name for role in interaction.user.roles]
+        access_level = "admin" if any(role in admin_roles for role in user_roles) else "member"
+
         # Store token in DynamoDB with user info
         auth_table.put_item(Item={
             'token': token,
             'discord_id': str(interaction.user.id),
             'username': username,
             'display_name': display_name,
+            'access_level': access_level,
             'created_at': now.isoformat(),
             'expires_at': expires_at.isoformat(),
             'used': False
