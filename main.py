@@ -37,9 +37,6 @@ class MyClient(discord.Client):
         super().__init__(intents=intents)
         self.tree = app_commands.CommandTree(self)
 
-    async def setup_hook(self):
-        await self.tree.sync()
-
 
 bot = MyClient()
 
@@ -63,6 +60,9 @@ def save_message_to_dynamodb(message):
 @bot.event
 async def on_ready():
     print(f"Bot is ready! Logged in as {bot.user}")
+    print("Syncing slash commands...")
+    await bot.tree.sync()
+    print("Slash commands synced!")
     change_status.start()
 
 
