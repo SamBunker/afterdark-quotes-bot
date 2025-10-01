@@ -53,6 +53,12 @@ def save_message_to_dynamodb(message):
 @bot.event
 async def on_ready():
     print(f"Bot is ready! Logged in as {bot.user}")
+    print(f"Syncing slash commands...")
+    try:
+        synced = await bot.sync_commands()
+        print(f"Successfully synced {len(synced)} command(s)")
+    except Exception as e:
+        print(f"Failed to sync commands: {e}")
     change_status.start()
 
 
