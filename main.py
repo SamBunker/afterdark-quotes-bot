@@ -2,9 +2,7 @@ import discord
 import json
 import asyncio
 import boto3
-from dotenv import load_dotenv
-
-load_dotenv()
+import os
 
 TOKEN = os.getenv("TOKEN")
 CHANNEL_ID = os.getenv("CHANNEL_ID")
